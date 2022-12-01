@@ -1,4 +1,4 @@
-# Changelog for `P001`
+# Changelog for `day01`
 
 All notable changes to this project will be documented in this file.
 
