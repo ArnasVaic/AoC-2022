@@ -1,13 +1,8 @@
 module Main (main) where
-
-import Text.Parsec ( ParseError )
-
-import System.IO
-import Control.Monad.IO.Class
-
 import Lib
 
-main :: IO (Either ParseError Integer)
+main :: IO ()
 main = do
   str <- readFile "input"
-  pure $ solve str
+  putStrLn $ show (solve 1 str)
+  putStrLn $ show (solve 3 str)
