@@ -57,6 +57,5 @@ line' = do
   c <- oneOf "XYZ" <* char '\n'
   pure $ score (choose c a) a
 
--- part 1
 solve :: String -> Parser Int -> Either ParseError Int
 solve s p = parse (sum <$> some p) "" s
