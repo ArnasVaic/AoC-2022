@@ -1,6 +1,5 @@
 module Lib where
 
-import Data.List
 import Control.Applicative ( some )
 import Text.Parsec
 import Text.Parsec.String ( Parser )
@@ -33,20 +32,17 @@ score :: Hand -> Hand -> Int
 score x y = handScore x + winScore x y
 
 hand :: Parser Hand
-hand = 
+hand =
       Rock      <$ oneOf "AX"
   <|> Paper     <$ oneOf "BY"
   <|> Scissors  <$ oneOf "CZ"
 
+-- part 1
 line :: Parser Int
 line = do
   a <- hand <* char ' '
   b <- hand <* char '\n'
   pure $ score b a
-
--- part 1
-solve :: String -> Parser Int -> Either ParseError Int
-solve s p = parse (sum <$> some p) "" s
 
 choose :: Char -> Hand -> Hand
 choose 'X' = win
@@ -60,3 +56,7 @@ line' = do
   a <- hand <* char ' '
   c <- oneOf "XYZ" <* char '\n'
   pure $ score (choose c a) a
+
+-- part 1
+solve :: String -> Parser Int -> Either ParseError Int
+solve s p = parse (sum <$> some p) "" s
