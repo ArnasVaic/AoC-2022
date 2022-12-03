@@ -4,5 +4,5 @@ import Lib
 main :: IO ()
 main = do
   str <- readFile "input"
-  print $ solve str -- 1st part
-  print $ solve' str -- 1st part
+  print $ solve str rucksack  -- 1st part
+  print $ solve str badge     -- 2st part

@@ -19,16 +19,13 @@ half s = splitAt (length s `div` 2) s
 foo :: (String, String) -> Int
 foo (x, y) = sum $ map priority $ nub $ x `intersect` y
 
-line :: Parser Int
-line = foo . half <$> some (satisfy isAlpha)
+rucksack :: Parser Int
+rucksack = foo . half <$> some (satisfy isAlpha) <* char '\n'
 
 badge :: Parser Int
 badge = do
   ls <- replicateM 3 $ some (satisfy isAlpha) <* char '\n'
   pure $ priority . head . nub $ foldl1 intersect ls
 
-solve :: String -> Either ParseError Int
-solve s = sum <$> parse (some (line <* char '\n')) "" s
-
-solve' :: String -> Either ParseError Int
-solve' s = sum <$> parse (some badge) "" s
+solve :: String -> Parser Int -> Either ParseError Int
+solve s p = sum <$> parse (some p) "" s
