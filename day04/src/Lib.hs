@@ -1,30 +1,27 @@
+{-# LANGUAGE TupleSections #-}
 module Lib where
-
-import Data.Char
-import Data.List ( intersect, nub )
-import Control.Monad
 import Control.Applicative ( some )
 import Text.Parsec
 import Text.Parsec.String ( Parser )
 
+type Range a = (a, a, a, a)
+
 num :: Parser Int
-num = read <$> some (satisfy isDigit)
+num = read <$> some digit
 
-pair :: Parser Bool
-pair = do
-  a0 <- num <* char '-'
-  a1 <- num <* char ','
-  b0 <- num <* char '-'
-  b1 <- num <* char '\n'
-  pure $ (a0 >= b0 && a1 <= b1) || (b0 >= a0 && b1 <= a1)
+ranges :: Parser (Range Int)
+ranges = do
+  a <- num <* char '-'
+  b <- num <* char ','
+  c <- num <* char '-'
+  d <- num <* char '\n'
+  return (a, b, c, d)
 
-pair' :: Parser Bool
-pair' = do
-  a0 <- num <* char '-'
-  a1 <- num <* char ','
-  b0 <- num <* char '-'
-  b1 <- num <* char '\n'
-  pure $ not $ a1 < b0 || b1 < a0
+overlap :: Range Int -> Bool
+overlap (a, b, c, d) = b >= c && d >= a
 
-solve :: String -> Parser Bool -> Either ParseError Int
-solve s p = parse (length . filter (== True) <$> some p) "" s
+contains :: Range Int -> Bool
+contains (a, b, c, d) = (a <= c && d <= b) || (c <= a && b <= d)
+
+solve :: String -> (Range Int -> Bool) -> Either ParseError Int
+solve s p = parse (length . filter (== True) <$> some (p <$> ranges)) "" s
