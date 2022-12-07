@@ -1,4 +1,4 @@
-# day06
+# day07
 
 ## Prerequisites
 
