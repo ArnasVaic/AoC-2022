@@ -32,3 +32,28 @@ solve s = do
   inp <- parse input "" s
   let mat = zipWith comb (vish <$> inp) $ visv inp
   pure $ length $ filter (==True) $ concat mat
+
+-- h is current tree height
+-- xs here is all the trees that follow to a certain direction
+scoreElem :: Int-> [Int] -> Int
+scoreElem h xs = case findIndex (>= h) xs of
+  Just i -> i + 1
+  Nothing -> length xs
+
+scoreRight :: [Int] -> [Int]
+scoreRight [] = []
+scoreRight (x:xs) = scoreElem x xs : scoreRight xs
+
+scoreLeft :: [Int] -> [Int]
+scoreLeft= reverse. scoreRight . reverse
+
+rowScore :: [Int] -> [Integer]
+rowScore l = zipWith (*) (toInteger <$> scoreRight l) (toInteger <$> scoreLeft l)
+
+score :: [[Int]] -> [[Integer]]
+score inp = zipWith (zipWith (*)) (rowScore <$> inp) (transpose $ rowScore <$> transpose inp)
+
+solve' :: String -> Integer
+solve' s = case parse input "" s of
+  Left _ -> 0
+  Right mat -> maximum $ concat $ score mat
