@@ -12,7 +12,7 @@ touch p q = and $ (<=1) <$> abs <$> sub p q
 
 -- Single simulation step
 step :: Vec Int -> Vec Int -> Vec Int -> Vec Int
-step h h' t = if touch t h' then t else h
+step h h' t = if touch t h' then t else h -- h' is here the next position of head
 
 -- Simulate all steps
 simulate :: Vec Int -> Vec Int -> [Vec Int] -> [Vec Int]
@@ -39,3 +39,15 @@ solve s = do
       let dirs = concat directions
       let tails = [0,0] : simulate [0, 0] [0, 0] dirs
       Just $ length $ nub tails
+
+-- part 2 :)
+
+-- Given a list of knots, and velocity
+-- of the head knot, calculate new knot positions
+step' :: [Vec Int] -> Vec Int -> [Vec Int]
+step' [] _ = [] -- empty rope doesn't move anywhere
+step' [x] v = [add x v] -- one knot is just a solid object
+step' (x:y:xs) vx = do
+  let x' = add x vx
+  let y' = if touch x' y then y else x
+  x' : y' : step' xs (sub y' y)
