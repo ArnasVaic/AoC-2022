@@ -1,5 +1,7 @@
 module Solution where
 
+import Data.List
+import Data.List.Split
 import Text.Parsec
 import Text.Parsec.String (Parser)
 import Control.Applicative (some)
@@ -39,3 +41,21 @@ solve input = do
     Right ins -> do
       let s = sim 1 ins
       sum $ sig s
+
+solve' :: String -> String
+solve' input = do
+  case parse (some instr <* eof) "" input of
+    Left _ -> error "something went wrong"
+    Right ins -> do
+      let s = sim 1 ins
+      -- since CRT runs first, offset X value list by one
+      let rows = chunksOf 40 (simCRT 0 (1 : init s))
+      intercalate "\n" rows
+
+-- part 2
+pixel :: Int -> Int -> Char
+pixel x p = if contains p [x - 1, x, x + 1] then '#' else '.'
+
+simCRT :: Int -> [Int] -> [Char]
+simCRT _ [] = []
+simCRT iter (x:xs) = pixel x iter : simCRT (mod (iter + 1) 40) xs
