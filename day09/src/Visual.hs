@@ -1,15 +1,9 @@
 module Visual where
 
-import Data.List(transpose)
+import Data.List(transpose, intercalate)
 
 import Utils
 import Solution
-
-boardWidth :: Int
-boardWidth = 6
-
-boardHeight :: Int
-boardHeight = 5
 
 -- Discrete integration
 -- Given a_0 and Δa_0, Δa_1, ..., Δa_n, calculate a_0, a_1, ..., a_n
@@ -49,16 +43,25 @@ place' ((i,e):xs) mat = case place i e mat of
 flipRows :: [[a]] -> [[a]]
 flipRows mat = transpose $ reverse <$> transpose mat
 
-vstep' :: [Vec Int] -> Vec Int -> IO ()
-vstep' knots v = do
-  putStrLn $ visualize knots
-  let knots' = step' knots v
-  putStrLn $ visualize knots'
+traceTail :: [[Vec Int]] -> IO ()
+traceTail ropes = do
+  let tp = last <$> ropes
+  putStrLn ""
 
-visualize :: [Vec Int] -> String
-visualize knots = do -- h for head position, t for tail position
-  let board = replicate boardHeight (replicate boardWidth '.')
+showSim :: [Vec Int] -> [Vec Int] -> IO ()
+showSim knots vs = do
+  let knots' = sim knots vs
+  let minX = minimum $ minimum $ map (!! 0) <$> knots'
+  let minY = minimum $ minimum $ map (!! 1) <$> knots'
+  let knots'' = map (add [-minX, -minY]) <$> knots'
+  let maxX = maximum $ maximum $ map (!! 0) <$> knots''
+  let maxY = maximum $ maximum $ map (!! 1) <$> knots''
+  putStrLn $ intercalate "\n" $ visualize (maxX + 1) (maxY + 1) <$> knots''
+
+visualize :: Int -> Int -> [Vec Int] -> String
+visualize w h knots = do -- h for head position, t for tail position
+  let board = replicate h (replicate w '.')
   let z' = zip knots "H123456789"
-  case place' z' board of 
+  case place' (reverse z') board of 
     Nothing -> error "Program should not reach this point"
     Just board' -> concat $ (++"\n") <$> flipRows board'
